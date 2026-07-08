@@ -44,4 +44,15 @@ module type S = sig
 end
 
 module Make (IO : IO) : S with module IO = IO
-module Make_HTTP (IO : Sigs.StringIO) : S with module IO = Http_io.Make(IO)
+
+module Make_HTTP (SIO : Sigs.StringIO) : sig
+  include S with module IO = Http_io.Make(SIO)
+
+  val create_stdio :
+    ?on_received:(json -> unit) ->
+    ?on_sent:(json -> unit) ->
+    env:SIO.env ->
+    server ->
+    t
+  (** Create a connection using stdin/stdout *)
+end

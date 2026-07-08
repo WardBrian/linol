@@ -312,7 +312,9 @@ module Make (IO : IO) : S with module IO = IO = struct
     loop ()
 end
 
-module Make_HTTP (IO : Sigs.StringIO) : S with module IO = Http_io.Make(IO) =
-struct
-  include Make (Http_io.Make (IO))
+module Make_HTTP (SIO : Sigs.StringIO) = struct
+  include Make (Http_io.Make (SIO))
+
+  let create_stdio ?on_received ?on_sent ~env server : t =
+    create ?on_received ?on_sent ~ic:(SIO.stdin env) ~oc:(SIO.stdout env) server
 end
